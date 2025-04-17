@@ -1,3 +1,4 @@
+from typing import Dict, List
 from dotenv import load_dotenv
 import os
 
@@ -6,11 +7,12 @@ from langchain_pinecone import PineconeVectorStore
 from langchain import hub
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain.chains.retrieval import create_retrieval_chain
+from langchain.chains.history_aware_retriever import create_history_aware_retriever
 
 load_dotenv()
 
 
-def run_llm(query: str):
+def run_llm(query: str, chat_history: List[Dict[str, any]] = []):
     embeddings = GoogleGenerativeAIEmbeddings(
         google_api_key=os.getenv("GOOGLE_API_KEY"),
         model="models/text-embedding-004",
@@ -33,12 +35,19 @@ def run_llm(query: str):
         prompt=retrieval_qa_chat_prompt,
     )
 
-    qa = create_retrieval_chain(
+    rephrase_prompt = hub.pull("langchain-ai/chat-langchain-rephrase")
+    history_aware_retriever = create_history_aware_retriever(
+        llm=chat,
         retriever=doc_search.as_retriever(),
+        prompt=rephrase_prompt,
+    )
+
+    qa = create_retrieval_chain(
+        retriever=history_aware_retriever,
         combine_docs_chain=stuff_documents_chain,
     )
 
-    result = qa.invoke({"input": query})
+    result = qa.invoke({"input": query, "chat_history": chat_history})
 
     new_result = {
         "query": result["input"],
