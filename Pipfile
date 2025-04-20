@@ -18,7 +18,6 @@ streamlit-chat = "*"
 tqdm = "*"
 isort = "*"
 langchainhub = "*"
-firecrawl-py = "*"
 langchain-community = "*"
 langsmith = "*"
 pinecone = "*"
@@ -26,6 +25,7 @@ pillow = "*"
 langchain-google-genai = "*"
 langchain-pinecone = "*"
 google-generativeai = "*"
+firecrawl-py = "==0.0.20"
 
 [dev-packages]
 

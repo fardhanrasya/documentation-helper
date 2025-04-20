@@ -32,7 +32,7 @@ def create_sources_string(source_urls: set[str]) -> str:
 if prompt:
     with st.spinner("Generating response..."):
         result = run_llm(prompt, chat_history=st.session_state.chat_history)
-        formatted_response = f"{result['result']} \n\n {create_sources_string(set([doc.metadata['source'] for doc in result['source']]))}"
+        formatted_response = f"{result['result']} \n\n {create_sources_string(set([doc.metadata['url'] for doc in result['source']]))}"
         st.session_state.chat_user_prompt_history.append(prompt)
         st.session_state.chat_answer_history.append(formatted_response)
         st.session_state.chat_history.append(("user", prompt))
